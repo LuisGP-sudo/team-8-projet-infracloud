@@ -1,17 +1,15 @@
-
-#            TEST
-
 # Alarm para CPU alto
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   alarm_name          = "LGZ-CPU-High"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = 60
   statistic           = "Average"
   threshold           = 70
   alarm_description   = "Escalar hacia arriba si CPU > 70%"
+  treat_missing_data  = "notBreaching"
 
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.lgz_as_group.name
@@ -35,13 +33,14 @@ resource "aws_autoscaling_policy" "scale_up_policy" {
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   alarm_name          = "LGZ-CPU-Low"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = 60
   statistic           = "Average"
-  threshold           = 30
-  alarm_description   = "Escalar hacia abajo si CPU < 30%"
+  threshold           = 20
+  alarm_description   = "Escalar hacia abajo si CPU < 20%"
+  treat_missing_data  = "notBreaching"
 
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.lgz_as_group.name
@@ -61,21 +60,21 @@ resource "aws_autoscaling_policy" "scale_down_policy" {
   cooldown                = 300
 }
 
-
-# Alarm basada en el ALB (RequestCount per Target)
+# Alarm basada en ALB: tráfico ALTO
 resource "aws_cloudwatch_metric_alarm" "alb_requests_high" {
   alarm_name          = "LGZ-ALB-HighTraffic"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
   metric_name         = "RequestCountPerTarget"
   namespace           = "AWS/ApplicationELB"
   period              = 60
-  statistic           = "Average"
+  statistic           = "Sum"
   threshold           = 100
   alarm_description   = "Escalar hacia arriba si ALB recibe >100 requests por target"
+  treat_missing_data  = "notBreaching"
 
   dimensions = {
-    TargetGroup = aws_lb_target_group.lgz-alb-tg.name
+    TargetGroup  = aws_lb_target_group.lgz-alb-tg.name
     LoadBalancer = aws_lb.lgz-alb.name
   }
 
@@ -84,19 +83,21 @@ resource "aws_cloudwatch_metric_alarm" "alb_requests_high" {
   ]
 }
 
+# Alarm basada en ALB: tráfico BAJO
 resource "aws_cloudwatch_metric_alarm" "alb_requests_low" {
   alarm_name          = "LGZ-ALB-LowTraffic"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
   metric_name         = "RequestCountPerTarget"
   namespace           = "AWS/ApplicationELB"
   period              = 60
-  statistic           = "Average"
+  statistic           = "Sum"
   threshold           = 10
   alarm_description   = "Escalar hacia abajo si ALB recibe <10 requests por target"
+  treat_missing_data  = "notBreaching"
 
   dimensions = {
-    TargetGroup = aws_lb_target_group.lgz-alb-tg.name
+    TargetGroup  = aws_lb_target_group.lgz-alb-tg.name
     LoadBalancer = aws_lb.lgz-alb.name
   }
 
