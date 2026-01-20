@@ -92,7 +92,7 @@ resource "aws_lb_target_group" "lgz-alb-tg" {
 # Autoscaling group
 resource "aws_autoscaling_group" "lgz_as_group" {
   name = "LGZ-AutoscalingGroup"
-  desired_capacity   = 1
+  desired_capacity   = 2
   max_size           = 4
   min_size           = 1
   

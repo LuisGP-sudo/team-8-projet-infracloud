@@ -73,7 +73,7 @@ resource "aws_autoscaling_policy" "scale_up_policy" {
   autoscaling_group_name  = aws_autoscaling_group.lgz_as_group.name
   adjustment_type         = "ChangeInCapacity"
   scaling_adjustment      = 1
-  cooldown                = 300
+  cooldown                = 60
 }
 
 # Alarm para CPU bajo
@@ -92,10 +92,6 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.lgz_as_group.name
   }
-
-  alarm_actions = [
-    aws_autoscaling_policy.scale_down_policy.arn
-  ]
 }
 
 # Policy de escalado hacia abajo
@@ -104,10 +100,12 @@ resource "aws_autoscaling_policy" "scale_down_policy" {
   autoscaling_group_name  = aws_autoscaling_group.lgz_as_group.name
   adjustment_type         = "ChangeInCapacity"
   scaling_adjustment      = -1
-  cooldown                = 300
+  cooldown                = 60
 }
 
 
+
+#Dashboard
 resource "aws_cloudwatch_dashboard" "lgz_dashboard" {
   dashboard_name = "LGZ-Infrastructure-Dashboard"
 
@@ -168,9 +166,28 @@ resource "aws_cloudwatch_dashboard" "lgz_dashboard" {
           stacked = false
           region = "us-east-1"
           title = "Network Metrics"
-          period = 60
+          period = 300
         }
-      }
+      },
+      {
+          type = "metric"
+          x = 12
+          y = 12
+          width = 12
+          height = 6
+          properties = {
+            metrics = [
+              ["AWS/AutoScaling", "DesiredCapacity", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name],
+              ["AWS/AutoScaling", "GroupInServiceInstances", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name]
+            ]
+            view   = "timeSeries"
+            stacked = false
+            region = "us-east-1"
+            title  = "Desired vs Activas"
+            period = 60
+          }
+        }
+
     ]
   })
 }
