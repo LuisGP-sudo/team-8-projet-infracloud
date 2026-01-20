@@ -34,8 +34,8 @@ resource "aws_cloudwatch_metric_alarm" "alb_requests_high" {
   treat_missing_data  = "notBreaching"
 
   dimensions = {
-    TargetGroup  = aws_lb_target_group.lgz-alb-tg.name
-    LoadBalancer = aws_lb.lgz-alb.name
+    TargetGroup  = aws_lb_target_group.lgz-alb-tg.arn_suffix
+    LoadBalancer = aws_lb.lgz-alb.arn_suffix
   }
 
   alarm_actions = [
@@ -57,8 +57,8 @@ resource "aws_cloudwatch_metric_alarm" "alb_requests_low" {
   treat_missing_data  = "notBreaching"
 
   dimensions = {
-    TargetGroup  = aws_lb_target_group.lgz-alb-tg.name
-    LoadBalancer = aws_lb.lgz-alb.name
+    TargetGroup  = aws_lb_target_group.lgz-alb-tg.arn_suffix
+    LoadBalancer = aws_lb.lgz-alb.arn_suffix
   }
 
   alarm_actions = [
