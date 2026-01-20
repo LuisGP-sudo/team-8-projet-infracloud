@@ -107,3 +107,71 @@ resource "aws_autoscaling_policy" "scale_down_policy" {
   cooldown                = 300
 }
 
+
+resource "aws_cloudwatch_dashboard" "lgz_dashboard" {
+  dashboard_name = "LGZ-Infrastructure-Dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      #Alarm Status Widget
+      {
+        type = "alarm"
+        x = 0
+        y = 0
+        width = 12
+        height = 6
+        properties = {
+          alarms = [
+            aws_cloudwatch_metric_alarm.cpu_high.arn,
+            aws_cloudwatch_metric_alarm.cpu_low.arn,
+            aws_cloudwatch_metric_alarm.alb_requests_high.arn,
+            aws_cloudwatch_metric_alarm.alb_requests_low.arn
+          ]
+          title = "Alarm Satus"
+        }
+      },
+
+      #CPU Utilization Line Chart
+      {
+        type = "metric"
+        x = 12
+        y = 0
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name]
+          ]
+          view = "timeSeries"
+          stacked = false
+          region = "us-east-1"
+          title = "CPU Utilization"
+          period = 60
+        }
+      },
+
+      #Network Metrics Table
+      {
+        type = "metric"
+        x = 0
+        y = 6
+        width = 24
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/EC2", "NetworkIn", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name],
+            ["AWS/EC2", "NetworkOut", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name],
+            ["AWS/EC2", "NetworkPacketsIn", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name],
+            ["AWS/EC2", "NetworkPacketsOut", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name]
+          ]
+          view = "timeSeries"
+          stacked = false
+          region = "us-east-1"
+          title = "Network Metrics"
+          period = 60
+        }
+      }
+    ]
+  })
+}
+
