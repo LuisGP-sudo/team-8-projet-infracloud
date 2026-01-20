@@ -97,7 +97,7 @@ resource "aws_autoscaling_group" "lgz_as_group" {
   min_size           = 1
   
   vpc_zone_identifier = [
-    aws_subnet.private1.id,   #test public > private
+    aws_subnet.private1.id,   
     aws_subnet.private2.id
 ]
 

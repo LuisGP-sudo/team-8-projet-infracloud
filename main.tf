@@ -137,28 +137,9 @@ resource "aws_launch_template" "lt_webservers" {
     }
   }
 
-  user_data = base64encode(<<EOF
-#!/bin/bash
-
-dnf update -y
-
-dnf install -y httpd
-
-systemctl enable httpd.service
-systemctl start httpd.service
-
-cat <<EOT > /var/www/html/metadata.sh
-#!/bin/bash
-TOKEN=\$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-curl -H "X-aws-ec2-metadata-token: \$TOKEN" http://169.254.169.254/latest/meta-data/instance-id > /var/www/html/index.html
-EOT
-
-chmod +x /var/www/html/metadata.sh
-
-/var/www/html/metadata.sh
-
-EOF
-)
+  user_data = base64encode(templatefile("${path.module}/instance_config.sh", {
+    env = "prod"
+  }))
 
 }
 
