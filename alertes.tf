@@ -20,46 +20,6 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   ]
 }
 
-# Policy de escalado hacia arriba
-resource "aws_autoscaling_policy" "scale_up_policy" {
-  name                   = "LGZ-scale-up-policy"
-  autoscaling_group_name  = aws_autoscaling_group.lgz_as_group.name
-  adjustment_type         = "ChangeInCapacity"
-  scaling_adjustment      = 1
-  cooldown                = 300
-}
-
-# Alarm para CPU bajo
-resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  alarm_name          = "LGZ-CPU-Low"
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = 3
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = 60
-  statistic           = "Average"
-  threshold           = 20
-  alarm_description   = "Escalar hacia abajo si CPU < 20%"
-  treat_missing_data  = "notBreaching"
-
-  dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.lgz_as_group.name
-  }
-
-  alarm_actions = [
-    aws_autoscaling_policy.scale_down_policy.arn
-  ]
-}
-
-# Policy de escalado hacia abajo
-resource "aws_autoscaling_policy" "scale_down_policy" {
-  name                   = "LGZ-scale-down-policy"
-  autoscaling_group_name  = aws_autoscaling_group.lgz_as_group.name
-  adjustment_type         = "ChangeInCapacity"
-  scaling_adjustment      = -1
-  cooldown                = 300
-}
-
 # Alarm basada en ALB: tráfico ALTO
 resource "aws_cloudwatch_metric_alarm" "alb_requests_high" {
   alarm_name          = "LGZ-ALB-HighTraffic"
@@ -105,3 +65,45 @@ resource "aws_cloudwatch_metric_alarm" "alb_requests_low" {
     aws_autoscaling_policy.scale_down_policy.arn
   ]
 }
+
+
+# Policy de escalado hacia arriba
+resource "aws_autoscaling_policy" "scale_up_policy" {
+  name                   = "LGZ-scale-up-policy"
+  autoscaling_group_name  = aws_autoscaling_group.lgz_as_group.name
+  adjustment_type         = "ChangeInCapacity"
+  scaling_adjustment      = 1
+  cooldown                = 300
+}
+
+# Alarm para CPU bajo
+resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+  alarm_name          = "LGZ-CPU-Low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 3
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 20
+  alarm_description   = "Escalar hacia abajo si CPU < 20%"
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.lgz_as_group.name
+  }
+
+  alarm_actions = [
+    aws_autoscaling_policy.scale_down_policy.arn
+  ]
+}
+
+# Policy de escalado hacia abajo
+resource "aws_autoscaling_policy" "scale_down_policy" {
+  name                   = "LGZ-scale-down-policy"
+  autoscaling_group_name  = aws_autoscaling_group.lgz_as_group.name
+  adjustment_type         = "ChangeInCapacity"
+  scaling_adjustment      = -1
+  cooldown                = 300
+}
+
