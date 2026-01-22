@@ -14,10 +14,6 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.lgz_as_group.name
   }
-
-  alarm_actions = [
-    aws_autoscaling_policy.scale_up_policy.arn
-  ]
 }
 
 # Alarm basada en ALB: tráfico ALTO
@@ -169,26 +165,6 @@ resource "aws_cloudwatch_dashboard" "lgz_dashboard" {
           period = 300
         }
       },
-      {
-          type = "metric"
-          x = 12
-          y = 12
-          width = 12
-          height = 6
-          properties = {
-            metrics = [
-              ["AWS/AutoScaling", "DesiredCapacity", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name],
-              ["AWS/AutoScaling", "GroupInServiceInstances", "AutoScalingGroupName", aws_autoscaling_group.lgz_as_group.name]
-            ]
-            view   = "timeSeries"
-            stacked = false
-            region = "us-east-1"
-            title  = "Desired vs Activas"
-            period = 60
-          }
-        }
-
     ]
   })
-}
-
+} 
