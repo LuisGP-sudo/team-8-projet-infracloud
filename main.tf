@@ -186,12 +186,3 @@ resource "aws_lb_listener" "lgz-alb-listener" {
   }
 }
 
-
-# TEST CloudWatch metric policy
-resource "aws_autoscaling_policy" "lgz-cpu-tracking" {
-  name = "LGZ-scale-down-policy"
-  autoscaling_group_name = aws_autoscaling_group.lgz_as_group.name
-  scaling_adjustment = 1
-  adjustment_type = "ChangeInCapacity"
-  cooldown = 300
-}
