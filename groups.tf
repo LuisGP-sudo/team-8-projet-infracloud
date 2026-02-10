@@ -93,7 +93,7 @@ resource "aws_lb_target_group" "lgz-alb-tg" {
 resource "aws_autoscaling_group" "lgz_as_group" {
   name = "LGZ-AutoscalingGroup"
   desired_capacity   = 2
-  max_size           = 4
+  max_size           = 5
   min_size           = 1
   
   vpc_zone_identifier = [
