@@ -133,8 +133,6 @@ Vérifier ensuite dans la console (Auto Scaling > `LGZ-AutoscalingGroup` et le d
 terraform destroy
 ```
 
-> Pense à détruire l'infra après les tests : la NAT Gateway et l'ALB sont facturés à l'heure.
-
 ## Équipe
 
 **Team 8**
